@@ -8,6 +8,8 @@ University of Maryland, College Park
 """
 import glob
 import cv2
+import lk_algo
+
 print('Headers Loaded!')
 
 IMAGES_PATH = "/home/nalindas9/Documents/Courses/Spring_2020_Semester_2/ENPM673_Perception_for_Autonomous_Robots/Github/enpm673/template-tracker-lucas-kanade/Dataset/Car4/img"
@@ -21,7 +23,9 @@ def main():
     print('Image:', frame.split("img/", 1)[1])
     img = cv2.imread(frame)
     if frame.split("img/", 1)[1] == '0001.jpg':
-      template_frame = cv2.rectangle(img, BOX_START, BOX_END, BOX_COLOR, BOX_THICKNESS)  
+      template = img[BOX_START[1]:BOX_END[1], BOX_START[0]:BOX_END[0]]
+      template_frame = cv2.rectangle(img, BOX_START, BOX_END, BOX_COLOR, BOX_THICKNESS)
+      lk_algo.affine_LK_tracker(img, template, [BOX_START[0],BOX_START[1],BOX_END[0], BOX_END[1]], [0,0])   
     cv2.imshow('Frame', img)
     cv2.waitKey(0)
   cv2.destroyAllWindows()
