@@ -22,13 +22,17 @@ def main():
   for frame in sorted(glob.glob(IMAGES_PATH + "/*")):
     print('Image:', frame.split("img/", 1)[1])
     img = cv2.imread(frame)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     if frame.split("img/", 1)[1] == '0001.jpg':
       template = img[BOX_START[1]:BOX_END[1], BOX_START[0]:BOX_END[0]]
       template_frame = cv2.rectangle(img, BOX_START, BOX_END, BOX_COLOR, BOX_THICKNESS)
-      lk_algo.affine_LK_tracker(img, template, [BOX_START[0],BOX_START[1],BOX_END[0], BOX_END[1]], [0,0])   
-    cv2.imshow('Frame', img)
+      cv2.imshow('Frame', template_frame)
+      cv2.waitKey(0)
+    rect = [[BOX_START[0], BOX_START[1], 1], [BOX_END[0],BOX_START[1], 1], [BOX_START[0], BOX_END[1],1], [BOX_END[0], BOX_END[1], 1]]
+    cv2.imshow('Current frame', img)
     cv2.waitKey(0)
-  cv2.destroyAllWindows()
+    lk_algo.affine_LK_tracker(img, template, rect, [0,0])   
+    cv2.destroyAllWindows()
   
 if __name__ == '__main__':
   main()
