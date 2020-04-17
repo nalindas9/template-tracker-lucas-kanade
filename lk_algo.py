@@ -26,4 +26,7 @@ def affine_LK_tracker(img, tmp, rect, pprev):
   img_warp = img[p1new[1]:p4new[1], p1new[0]:p4new[0]]
   cv2.imshow('Warped Image', img_warp)
   cv2.waitKey(0)
-  
+  # Step 2 - Compute the error Image: Template - Warped image
+  error_img = tmp - img_warp
+  cv2.imshow('Error Image', error_img)
+  cv2.waitKey(0)
