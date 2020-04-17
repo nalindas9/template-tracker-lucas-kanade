@@ -18,7 +18,7 @@ def affine_LK_tracker(img, tmp, rect, pprev):
   delta_p = [0,0,0,0,0,0]
   p_matrix = np.array([[1+delta_p[0], delta_p[2], delta_p[4]],[delta_p[1], 1+delta_p[3], delta_p[5]], [0,0,1]])
   print('P Matrix:', p_matrix)
-  # Step 1 -  Getting new ROI in current frame by multiplying p_matrix with Template 
+  # Step 1 - Getting new ROI in current frame by multiplying p_matrix with Template 
   p1new, p2new, p3new, p4new = np.dot(p_matrix,p1), np.dot(p_matrix,p2), np.dot(p_matrix,p3), np.dot(p_matrix,p4)  
   cv2.imshow('template', tmp)
   cv2.waitKey(0) 
@@ -30,3 +30,10 @@ def affine_LK_tracker(img, tmp, rect, pprev):
   error_img = tmp - img_warp
   cv2.imshow('Error Image', error_img)
   cv2.waitKey(0)
+  # Step 3 - Compute the gradient of the current frame
+  x_grad, y_grad = np.gradient(img)
+  cv2.imshow('X gradient current frame', x_grad)
+  cv2.waitKey(0)
+  cv2.imshow('Y gradient current frame', y_grad)
+  cv2.waitKey(0)
+  
