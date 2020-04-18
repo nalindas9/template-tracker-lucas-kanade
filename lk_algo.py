@@ -4,10 +4,11 @@ Lucas Kanade Algorithm
 Authors:
 Nalin Das (nalindas9@gmail.com)
 Graduate Student pursuing Masters in Robotics,
-University of Maryland, College 
+University of Maryland, College Park
 """
 import cv2
 import numpy as np
+from numpy.linalg import multi_dot
 
 def jacobian(x, y):
   jacob = np.array([[x,0,y,0,1,0],[0, x, 0, y, 0, 1]])
@@ -57,3 +58,7 @@ def affine_LK_tracker(img, tmp, rect, pprev):
   # Step 6 - Compute the Hessian matrix
   H = np.dot(np.transpose(steepest_descent), steepest_descent)
   print('Hessian Matrix:', H, 'Shape:', H.shape)
+  # Step 7 - Compute updated delta P 
+  delta_p = multi_dot([np.linalg.inv(H), np.transpose(steepest_descent), error_img.flatten()])
+  print('Delta p:', delta_p)
+  
