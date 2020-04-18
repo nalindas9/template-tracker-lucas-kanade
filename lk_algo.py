@@ -32,7 +32,8 @@ def affine_LK_tracker(img, tmp, rect, pprev):
   cv2.imshow('Error Image', error_img)
   cv2.waitKey(0)
   # Step 3 - Compute the gradient of the current frame
-  x_grad, y_grad = np.gradient(img)
+  x_grad, y_grad = np.gradient(img_warp)
+  gradient_map = [] 
   cv2.imshow('X gradient current frame', x_grad)
   cv2.waitKey(0)
   cv2.imshow('Y gradient current frame', y_grad)
@@ -43,6 +44,12 @@ def affine_LK_tracker(img, tmp, rect, pprev):
   for i in range(img_warp.shape[0]):
     for j in range(img_warp.shape[1]):
       jacobian_map.append(jacobian(i, j))
-       
+      gradient_map.append([x_grad[i,j], y_grad[i,j]])     
   jacobian_map = np.array(jacobian_map)
+  gradient_map = np.array(gradient_map)
   print('Jacobian:', jacobian_map)
+  print('Gradient map:', gradient_map)
+  # Step 5 - Compute Steepest descent
+  steepest_descent = np.dot(gradient_map, jacobian_map)
+  print('Steepest descent', steepest_descent)
+  
