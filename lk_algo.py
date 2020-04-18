@@ -9,9 +9,10 @@ University of Maryland, College
 import cv2
 import numpy as np
 
-"""
-
-"""
+def jacobian(x, y):
+  jacob = np.array([[x,0,y,0,1,0],[0, x, 0, y, 0, 1]])
+  return jacob
+  
 def affine_LK_tracker(img, tmp, rect, pprev):
   p1,p2,p3,p4 = np.transpose(np.array(rect[0])), np.transpose(np.array(rect[1])), np.transpose(np.array(rect[2])), np.transpose(np.array(rect[3]))
   print('Template corners:', (p1,p2,p3,p4))
@@ -36,4 +37,12 @@ def affine_LK_tracker(img, tmp, rect, pprev):
   cv2.waitKey(0)
   cv2.imshow('Y gradient current frame', y_grad)
   cv2.waitKey(0)
-  
+  # Step 4 - Compute the Jacobian of the warp
+  jacob_func = np.vectorize(jacobian)
+  jacobian_map = []
+  for i in range(img_warp.shape[0]):
+    for j in range(img_warp.shape[1]):
+      jacobian_map.append(jacobian(i, j))
+       
+  jacobian_map = np.array(jacobian_map)
+  print('Jacobian:', jacobian_map)
