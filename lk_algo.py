@@ -42,8 +42,7 @@ def affine_LK_tracker(img, tmp, rect, pprev):
     pts1 = np.float32([p1[0:2],p2[0:2],p3[0:2]])
     pts2 = np.float32([p1new, p2new, p3new])
     M = cv2.getAffineTransform(pts1,pts2)
-    rows,cols = img.shape
-    img_warp = cv2.warpAffine(img,M,(cols,rows))
+    img_warp = cv2.warpAffine(img,M, (0,0), flags=cv2.INTER_CUBIC + cv2.WARP_INVERSE_MAP)
     #cv2.imshow('Warped image', img_warp)
     #cv2.waitKey(0) 
     img_warp = img_warp[int(p1new[1]):int(p4new[1]), int(p1new[0]):int(p4new[0])]
@@ -60,10 +59,10 @@ def affine_LK_tracker(img, tmp, rect, pprev):
     #cv2.waitKey(0)
     img_warp = np.resize(img_warp, (tmp.shape))
     # Step 2 - Compute the error Image: Template - Warped image
-    error_img = tmp - img_warp 
+    error_img = tmp - img_warp
     #error_img = np.reshape(error_img, (tmp.shape[0], tmp.shape[1]))
-    cv2.imshow('Error Image', error_img)
-    cv2.waitKey(0)
+    #cv2.imshow('Error Image', error_img)
+    #cv2.waitKey(0)
     # Step 3 - Compute the gradient of the current frame
     x_grad, y_grad = np.gradient(img_warp)
     gradient_map = [] 
@@ -76,8 +75,8 @@ def affine_LK_tracker(img, tmp, rect, pprev):
     steepest_descent = []
     for i in range(img_warp.shape[0]):
       for j in range(img_warp.shape[1]):
-        jacobian_map.append(jacobian(i, j))
-        gradient_map.append([x_grad[i,j], y_grad[i,j]]) 
+        #jacobian_map.append(jacobian(i, j))
+        #gradient_map.append([x_grad[i,j], y_grad[i,j]]) 
         steepest_descent.append(np.dot(np.array([x_grad[i,j], y_grad[i,j]]), np.array(jacobian(i, j))))  
     jacobian_map = np.array(jacobian_map)
     gradient_map = np.array(gradient_map)
@@ -102,3 +101,4 @@ def affine_LK_tracker(img, tmp, rect, pprev):
   cv2.imshow('tracked_frame', tracked_frame)
   cv2.waitKey(0)   
   return (int(p1new[0]), int(p1new[1])), (int(p4new[0]), int(p4new[1])), p
+
