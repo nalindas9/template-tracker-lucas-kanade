@@ -21,7 +21,7 @@ def affine_LK_tracker(img, tmp, rect, pprev):
   norm = 5
   itr=0
   
-  for i in range(30):
+  while norm >= 0.04:
     print('iteration:', itr)
     p_matrix = np.array([[1+p[0], p[2], p[4]],[p[1], 1+p[3], p[5]], [0,0,1]])
     print('P Matrix:', p_matrix)
@@ -106,10 +106,11 @@ def affine_LK_tracker(img, tmp, rect, pprev):
     norm = np.linalg.norm(delta_p)
     print('Norm:', norm)
     # Step 9 - Update P matrix
+    delta_p = np.dot(delta_p, 60)
     p = np.add(p, delta_p)
     itr= itr+1
   tracked_frame = cv2.rectangle(img, (int(p1new[0]), int(p1new[1])), (int(p4new[0]), int(p4new[1])), 255, 2)
   cv2.imshow('tracked_frame', tracked_frame)
   cv2.waitKey(0)   
-  return p
+  return p 
 
