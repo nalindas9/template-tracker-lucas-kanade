@@ -16,8 +16,8 @@ IMAGES_PATH = "/home/nalindas9/Documents/Courses/Spring_2020_Semester_2/ENPM673_
 
 
 def main():
-  BOX_START = (63,49)
-  BOX_END = (179,139)
+  BOX_START = (66,55)
+  BOX_END = (178,139)
   BOX_COLOR = (0,255,0)
   BOX_THICKNESS = 2
   pprev = np.array([0,0,0,0,0,0])
@@ -26,15 +26,17 @@ def main():
     img = cv2.imread(frame)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = np.array(img)
+    #img = cv2.GaussianBlur(img,(5,5),0)
+    #cv2.imshow('Current frame', img)
+    #cv2.waitKey(0)
     if frame.split("img/", 1)[1] == '0001.jpg':
       template = img[BOX_START[1]:BOX_END[1], BOX_START[0]:BOX_END[0]]
     #template_frame = cv2.rectangle(img, BOX_START, BOX_END, BOX_COLOR, BOX_THICKNESS)
     #cv2.imshow('Frame', template)
     #cv2.waitKey(0)
-    rect = [[BOX_START[0], BOX_START[1], 1], [BOX_END[0],BOX_START[1], 1], [BOX_START[0], BOX_END[1],1], [BOX_END[0], BOX_END[1], 1]]
-    #cv2.imshow('Current frame', img)
-    #cv2.waitKey(0)
-    BOX_START, BOX_END, p = lk_algo.affine_LK_tracker(img, template, rect, pprev) 
+      rect = [[BOX_START[0], BOX_START[1], 1], [BOX_END[0],BOX_START[1], 1], [BOX_START[0], BOX_END[1],1], [BOX_END[0], BOX_END[1], 1]]
+    
+    p = lk_algo.affine_LK_tracker(img, template, rect, pprev) 
     pprev = p  
     cv2.destroyAllWindows()
   

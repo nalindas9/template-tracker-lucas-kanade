@@ -16,12 +16,12 @@ def jacobian(x, y):
   
 def affine_LK_tracker(img, tmp, rect, pprev):
   p1,p2,p3,p4 = np.transpose(np.array(rect[0])), np.transpose(np.array(rect[1])), np.transpose(np.array(rect[2])), np.transpose(np.array(rect[3]))
-  #print('Template corners:', (p1,p2,p3,p4))
+  print('Template corners:', (p1,p2,p3,p4))
   p = pprev
   norm = 5
   itr=0
   
-  for i in range(30):
+  while norm >= 0.10:
     print('iteration:', itr)
     p_matrix = np.array([[1+p[0], p[2], p[4]],[p[1], 1+p[3], p[5]], [0,0,1]])
     print('P Matrix:', p_matrix)
@@ -39,10 +39,11 @@ def affine_LK_tracker(img, tmp, rect, pprev):
     img_warp = img_warp.flatten()
     """
     p1new, p2new, p3new, p4new = np.dot(p_matrix,p1)[0:2], np.dot(p_matrix,p2)[0:2], np.dot(p_matrix,p3)[0:2], np.dot(p_matrix,p4)[0:2] 
-    pts1 = np.float32([p1[0:2],p2[0:2],p3[0:2]])
-    pts2 = np.float32([p1new, p2new, p3new])
-    M = cv2.getAffineTransform(pts1,pts2)
-    img_warp = cv2.warpAffine(img,M, (0,0), flags=cv2.INTER_CUBIC + cv2.WARP_INVERSE_MAP)
+    #pts1 = np.float32([p1[0:2],p2[0:2],p3[0:2]])
+    #pts2 = np.float32([p1new, p2new, p3new])
+    #M = cv2.getAffineTransform(pts1,pts2)
+    M = np.array([[1+p[0], p[2], p[4]],[p[1], 1+p[3], p[5]]], dtype=np.float32)
+    img_warp = cv2.warpAffine(img, M, (0,0), flags=cv2.INTER_CUBIC + cv2.WARP_INVERSE_MAP)
     #cv2.imshow('Warped image', img_warp)
     #cv2.waitKey(0) 
     img_warp = img_warp[int(p1new[1]):int(p4new[1]), int(p1new[0]):int(p4new[0])]
@@ -58,6 +59,7 @@ def affine_LK_tracker(img, tmp, rect, pprev):
     #cv2.imshow('Warped Image', img_warp)
     #cv2.waitKey(0)
     img_warp = np.resize(img_warp, (tmp.shape))
+    print('template size:', tmp.shape, 'warp size:', img_warp.shape)
     # Step 2 - Compute the error Image: Template - Warped image
     error_img = tmp - img_warp
     #error_img = np.reshape(error_img, (tmp.shape[0], tmp.shape[1]))
@@ -89,7 +91,7 @@ def affine_LK_tracker(img, tmp, rect, pprev):
     H = np.dot(np.transpose(steepest_descent), steepest_descent)
     print('Hessian Matrix:', H, 'Shape:', H.shape)
     # Step 7 - Compute updated delta P 
-    delta_p = multi_dot([np.linalg.inv(H), np.transpose(steepest_descent), error_img.flatten()])
+    delta_p = multi_dot([np.linalg.pinv(H), np.transpose(steepest_descent), error_img.flatten()])
     print('Delta p:', delta_p)
     # Step 8 - Compute Norm of delta P
     norm = np.linalg.norm(delta_p)
@@ -100,5 +102,5 @@ def affine_LK_tracker(img, tmp, rect, pprev):
   tracked_frame = cv2.rectangle(img, (int(p1new[0]), int(p1new[1])), (int(p4new[0]), int(p4new[1])), 255, 2)
   cv2.imshow('tracked_frame', tracked_frame)
   cv2.waitKey(0)   
-  return (int(p1new[0]), int(p1new[1])), (int(p4new[0]), int(p4new[1])), p
+  return p
 
