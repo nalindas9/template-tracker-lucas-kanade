@@ -8,7 +8,7 @@ University of Maryland, College Park
 """
 import glob
 import cv2
-import lk_algo
+import lk_algo_bolt
 import numpy as np
 print('Headers Loaded!')
 
@@ -21,9 +21,11 @@ def main():
   BOX_COLOR = (0,255,0)
   BOX_THICKNESS = 2
   pprev = np.array([0,0,0,0,0,0])
+  out = cv2.VideoWriter('bolt.avi',cv2.VideoWriter_fourcc(*'XVID'), 30, (480,270))
   for frame in sorted(glob.glob(IMAGES_PATH + "/*")):
     print('Image:', frame.split("img/", 1)[1])
     img = cv2.imread(frame)
+    color_img = cv2.imread(frame)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = np.array(img)
     img = cv2.GaussianBlur(img,(3,3),0)
@@ -47,7 +49,8 @@ def main():
     #cv2.imshow('brightness_diff1', brightness_diff)
     #cv2.waitKey(0)
     img = cv2.multiply(img, brightness_sf)
-    p = lk_algo.affine_LK_tracker(img, template, rect, pprev) 
+    p, tracked_frame = lk_algo_bolt.affine_LK_tracker(img, color_img, template, rect, pprev) 
+    out.write(np.uint8(tracked_frame))
     pprev = p  
     cv2.destroyAllWindows()
   
