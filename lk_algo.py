@@ -21,7 +21,7 @@ def affine_LK_tracker(img, tmp, rect, pprev):
   norm = 5
   itr=0
   
-  while norm >= 0.10:
+  for i in range(30):
     print('iteration:', itr)
     p_matrix = np.array([[1+p[0], p[2], p[4]],[p[1], 1+p[3], p[5]], [0,0,1]])
     print('P Matrix:', p_matrix)
@@ -46,7 +46,7 @@ def affine_LK_tracker(img, tmp, rect, pprev):
     img_warp = cv2.warpAffine(img, M, (0,0), flags=cv2.INTER_CUBIC + cv2.WARP_INVERSE_MAP)
     #cv2.imshow('Warped image', img_warp)
     #cv2.waitKey(0) 
-    img_warp = img_warp[int(p1new[1]):int(p4new[1]), int(p1new[0]):int(p4new[0])]
+    img_warp = img_warp[int(p1[1]):int(p4[1]), int(p1[0]):int(p4[0])]
     #cv2.imshow('template', tmp)
     #cv2.waitKey(0) 
     print('New ROI:', (p1new, p2new, p3new, p4new))
@@ -58,7 +58,7 @@ def affine_LK_tracker(img, tmp, rect, pprev):
     #img_warp = cv2.warpPerspective(tmp,M,(tmp.shape[1], tmp.shape[0]),flags=cv2.INTER_LINEAR)
     #cv2.imshow('Warped Image', img_warp)
     #cv2.waitKey(0)
-    img_warp = np.resize(img_warp, (tmp.shape))
+    #img_warp = np.resize(img_warp, (tmp.shape))
     print('template size:', tmp.shape, 'warp size:', img_warp.shape)
     # Step 2 - Compute the error Image: Template - Warped image
     error_img = tmp - img_warp
@@ -66,8 +66,17 @@ def affine_LK_tracker(img, tmp, rect, pprev):
     #cv2.imshow('Error Image', error_img)
     #cv2.waitKey(0)
     # Step 3 - Compute the gradient of the current frame
-    x_grad, y_grad = np.gradient(img_warp)
-    gradient_map = [] 
+    x_grad = cv2.Sobel(img,cv2.CV_64F,1,0,ksize=5)
+    y_grad = cv2.Sobel(img,cv2.CV_64F,1,0,ksize=5)
+    #cv2.imshow('X gradient current frame', x_grad)
+    #cv2.waitKey(0)
+    #cv2.imshow('Y gradient current frame', y_grad)
+    #cv2.waitKey(0)
+    x_grad = cv2.warpAffine(x_grad, M, (0,0), flags=cv2.INTER_CUBIC + cv2.WARP_INVERSE_MAP)
+    y_grad = cv2.warpAffine(y_grad, M, (0,0), flags=cv2.INTER_CUBIC + cv2.WARP_INVERSE_MAP)
+    x_grad = x_grad[int(p1[1]):int(p4[1]), int(p1[0]):int(p4[0])]
+    y_grad = y_grad[int(p1[1]):int(p4[1]), int(p1[0]):int(p4[0])]
+    gradient_map = []     
     #cv2.imshow('X gradient current frame', x_grad)
     #cv2.waitKey(0)
     #cv2.imshow('Y gradient current frame', y_grad)
@@ -75,8 +84,8 @@ def affine_LK_tracker(img, tmp, rect, pprev):
     # Step 4 - Compute the Jacobian of the warp
     jacobian_map = []
     steepest_descent = []
-    for i in range(img_warp.shape[0]):
-      for j in range(img_warp.shape[1]):
+    for i in range(x_grad.shape[0]):
+      for j in range(x_grad.shape[1]):
         #jacobian_map.append(jacobian(i, j))
         #gradient_map.append([x_grad[i,j], y_grad[i,j]]) 
         steepest_descent.append(np.dot(np.array([x_grad[i,j], y_grad[i,j]]), np.array(jacobian(i, j))))  

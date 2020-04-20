@@ -12,12 +12,12 @@ import lk_algo
 import numpy as np
 print('Headers Loaded!')
 
-IMAGES_PATH = "/home/nalindas9/Documents/Courses/Spring_2020_Semester_2/ENPM673_Perception_for_Autonomous_Robots/Github/enpm673/template-tracker-lucas-kanade/Dataset/Car4/img"
+IMAGES_PATH = "/home/nalindas9/Documents/Courses/Spring_2020_Semester_2/ENPM673_Perception_for_Autonomous_Robots/Github/enpm673/template-tracker-lucas-kanade/Dataset/Bolt2/img"
 
 
 def main():
-  BOX_START = (66,55)
-  BOX_END = (178,139)
+  BOX_START = (269,75)
+  BOX_END = (269+34,75+64)
   BOX_COLOR = (0,255,0)
   BOX_THICKNESS = 2
   pprev = np.array([0,0,0,0,0,0])
@@ -26,7 +26,7 @@ def main():
     img = cv2.imread(frame)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = np.array(img)
-    #img = cv2.GaussianBlur(img,(5,5),0)
+    img = cv2.GaussianBlur(img,(3,3),3)
     #cv2.imshow('Current frame', img)
     #cv2.waitKey(0)
     if frame.split("img/", 1)[1] == '0001.jpg':
