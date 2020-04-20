@@ -9,6 +9,7 @@ University of Maryland, College Park
 import cv2
 import numpy as np
 from numpy.linalg import multi_dot
+import math
 
 def jacobian(x, y):
   jacob = np.array([[x,0,y,0,1,0],[0, x, 0, y, 0, 1]])
@@ -21,7 +22,7 @@ def affine_LK_tracker(img, tmp, rect, pprev):
   norm = 5
   itr=0
   
-  while norm >= 0.04:
+  for i in range(30):
     print('iteration:', itr)
     p_matrix = np.array([[1+p[0], p[2], p[4]],[p[1], 1+p[3], p[5]], [0,0,1]])
     print('P Matrix:', p_matrix)
@@ -84,11 +85,15 @@ def affine_LK_tracker(img, tmp, rect, pprev):
     # Step 4 - Compute the Jacobian of the warp
     jacobian_map = []
     steepest_descent = []
+    W = []
+    sigma = 5
     for i in range(x_grad.shape[0]):
       for j in range(x_grad.shape[1]):
         #jacobian_map.append(jacobian(i, j))
         #gradient_map.append([x_grad[i,j], y_grad[i,j]]) 
-        steepest_descent.append(np.dot(np.array([x_grad[i,j], y_grad[i,j]]), np.array(jacobian(i, j))))  
+        steepest_descent.append(np.dot(np.array([x_grad[i,j], y_grad[i,j]]), np.array(jacobian(i, j))))   
+        weight = (1/sigma*math.sqrt(2*np.pi))*math.exp((-(math.sqrt((i - x_grad.shape[0]/2)**2 + (j - x_grad.shape[1]/2)**2))**2)/(2*(sigma**2)))
+        W.append(weight)   
     jacobian_map = np.array(jacobian_map)
     gradient_map = np.array(gradient_map)
     print('Jacobian:', jacobian_map)
@@ -96,17 +101,21 @@ def affine_LK_tracker(img, tmp, rect, pprev):
     # Step 5 - Compute Steepest descent
     steepest_descent = np.array(steepest_descent)
     print('Steepest descent', steepest_descent)
+    # Huber Loss - Weighted Window Intermidiate step- Calculate diagonal weight matrix
+    W = np.diag(W)
+    print('Weights:', W)
     # Step 6 - Compute the Hessian matrix
-    H = np.dot(np.transpose(steepest_descent), steepest_descent)
+    #H = np.dot(np.transpose(steepest_descent), steepest_descent)
+    H = multi_dot([np.transpose(steepest_descent), W, steepest_descent])
     print('Hessian Matrix:', H, 'Shape:', H.shape)
     # Step 7 - Compute updated delta P 
-    delta_p = multi_dot([np.linalg.pinv(H), np.transpose(steepest_descent), error_img.flatten()])
+    delta_p = multi_dot([np.linalg.pinv(H), np.transpose(steepest_descent), W, error_img.flatten()])
     print('Delta p:', delta_p)
     # Step 8 - Compute Norm of delta P
     norm = np.linalg.norm(delta_p)
     print('Norm:', norm)
     # Step 9 - Update P matrix
-    delta_p = np.dot(delta_p, 60)
+    delta_p = np.dot(delta_p, 1)
     p = np.add(p, delta_p)
     itr= itr+1
   tracked_frame = cv2.rectangle(img, (int(p1new[0]), int(p1new[1])), (int(p4new[0]), int(p4new[1])), 255, 2)
