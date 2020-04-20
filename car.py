@@ -26,7 +26,7 @@ def main():
     img = cv2.imread(frame)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = np.array(img)
-    img = cv2.GaussianBlur(img,(3,3),3)
+    img = cv2.GaussianBlur(img,(3,3),0)
     img_brightness = np.mean(img)
     #cv2.imshow('Current frame', img)
     #cv2.waitKey(0)
