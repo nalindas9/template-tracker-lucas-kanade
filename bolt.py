@@ -12,16 +12,19 @@ import lk_algo_bolt
 import numpy as np
 print('Headers Loaded!')
 
+# Specify the dataset path here
 IMAGES_PATH = "/home/nalindas9/Documents/Courses/Spring_2020_Semester_2/ENPM673_Perception_for_Autonomous_Robots/Github/enpm673/template-tracker-lucas-kanade/Dataset/Bolt2/img"
 
 
+# Main function
 def main():
+  # Bounding box parameters
   BOX_START = (269,75)
   BOX_END = (269+34,75+64)
   BOX_COLOR = (0,255,0)
   BOX_THICKNESS = 2
   pprev = np.array([0,0,0,0,0,0])
-  out = cv2.VideoWriter('bolt.avi',cv2.VideoWriter_fourcc(*'XVID'), 30, (480,270))
+  out = cv2.VideoWriter('bolt.avi',cv2.VideoWriter_fourcc(*'XVID'), 10, (480,270))
   for frame in sorted(glob.glob(IMAGES_PATH + "/*")):
     print('Image:', frame.split("img/", 1)[1])
     img = cv2.imread(frame)

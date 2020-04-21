@@ -24,8 +24,8 @@ def affine_LK_tracker(img, frame, tmp, rect, pprev):
   norm = 5
   itr=0
   
-  for i in range(30):
-    if norm >= 0.075:
+  for i in range(10):
+    if norm >= 0.15:
       #print('iteration:', itr)
       p_matrix = np.array([[1+p[0], p[2], p[4]],[p[1], 1+p[3], p[5]], [0,0,1]])
       #print('P Matrix:', p_matrix)
@@ -89,7 +89,7 @@ def affine_LK_tracker(img, frame, tmp, rect, pprev):
       jacobian_map = []
       steepest_descent = []
       W = []
-      sigma = 4.4556
+      sigma = 1.5
       for i in range(x_grad.shape[0]):
         for j in range(x_grad.shape[1]):
           #jacobian_map.append(jacobian(i, j))
@@ -124,9 +124,9 @@ def affine_LK_tracker(img, frame, tmp, rect, pprev):
     else:
       break
 
-  tracked_frame = cv2.rectangle(frame , (int(p1new[0]), int(p1new[1])), (int(p4new[0]), int(p4new[1])), (255,0,0), 4)
+  tracked_frame = cv2.rectangle(frame , (int(p1new[0]), int(p1new[1])), (int(p4new[0]), int(p4new[1])), (0,0,255), 4)
   #print('Shape:', tracked_frame.shape)
-  #cv2.imshow('tracked_frame', frame)
+  #cv2.imshow('tracked_frame', img)
   #cv2.waitKey(0)   
   return p, tracked_frame 
 

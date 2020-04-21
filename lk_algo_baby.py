@@ -89,7 +89,7 @@ def affine_LK_tracker(img, frame, tmp, rect, pprev):
       jacobian_map = []
       steepest_descent = []
       W = []
-      sigma = 11
+      sigma = 1.999999999
       for i in range(x_grad.shape[0]):
         for j in range(x_grad.shape[1]):
           #jacobian_map.append(jacobian(i, j))
@@ -118,7 +118,7 @@ def affine_LK_tracker(img, frame, tmp, rect, pprev):
       norm = np.linalg.norm(delta_p)
       #print('Norm:', norm)
       # Step 9 - Update P matrix
-      delta_p = np.dot(delta_p, 1)
+      delta_p = np.dot(delta_p, 0.35)
       p = np.add(p, delta_p)
       itr= itr+1
     else:
