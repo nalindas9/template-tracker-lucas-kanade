@@ -1,6 +1,8 @@
 # template-tracker-lucas-kanade
 This is the repository for the project - Template Tracker implemented using Lucas Kanade tracking algorithm. 
-
+<img src = "images/ezgif-2-48b253cac0c5.gif">
+<img src = "images/ezgif-2-62d3077ed572.gif">
+<img src = "images/ezgif-2-63d797569305.gif">
 ## System and library requirements.
  - Python3
  - Numpy
