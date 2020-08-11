@@ -1,8 +1,13 @@
 # template-tracker-lucas-kanade
-This is the repository for the project - Template Tracker implemented using Lucas Kanade tracking algorithm. 
+[![License:MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/nalindas9/template-tracker-lucas-kanade/blob/master/LICENSE)
+
+## About
+This is the repository for the project - Template Tracker implemented using Lucas Kanade tracking algorithm. In this project, we implement the Lucas Kanade Algorithm to compute the optical flow and track objects (a baby fighting a dragon, Usain Bolt running, and a car) from the given video sequences.
+
 <img src = "images/ezgif-2-48b253cac0c5.gif">
 <img src = "images/ezgif-2-62d3077ed572.gif">
 <img src = "images/ezgif-2-63d797569305.gif">
+
 ## System and library requirements.
  - Python3
  - Numpy
